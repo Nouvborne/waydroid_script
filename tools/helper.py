@@ -33,9 +33,9 @@ def get_data_dir():
 # execute on host
 def run(args: list, env: Optional[str] = None, ignore: Optional[str] = None):
     result = subprocess.run(
-        args=args, 
-        env=env, 
-        stdout=subprocess.PIPE, 
+        args=args,
+        env=env,
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
 
@@ -91,15 +91,17 @@ def shell(arg: str, env: Optional[str] = None):
 
 def download_file(url, f_name):
     md5 = ""
-    response = requests.get(url, stream=True)
+    if(url is not "magisk"):
+        response = requests.get(url, stream=True)
     total_size_in_bytes = int(response.headers.get('content-length', 0))
     block_size = 1024  # 1 Kibibyte
     progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
-    with open(f_name, 'wb') as file:
-        for data in response.iter_content(block_size):
-            progress_bar.update(len(data))
-            file.write(data)
-    progress_bar.close()
+    if (url is not "magisk"):
+        with open(f_name, 'wb') as file:
+            for data in response.iter_content(block_size):
+                progress_bar.update(len(data))
+                file.write(data)
+        progress_bar.close()
     with open(f_name, "rb") as f:
         bytes = f.read()
         md5 = hashlib.md5(bytes).hexdigest()
